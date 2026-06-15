@@ -1,0 +1,13 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {section}{\numberline {2}Méthodologie et Architecture}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Données et Modélisation Mathématique}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Les Algorithmes Déployés}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Architecture Logicielle Découplée (Full-Stack)}{3}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Résultats Expérimentaux}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Synthèse des Métriques}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Analyse Cinétique de la Convergence}{3}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Simulation Avancée et Limites Analytiques}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Visualisation des Trajectoires sur la Fonction de Rastrigin}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}La Limite Inhérente : Le Passage à l'Échelle (Scalability)}{5}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Conclusion}{5}{section.5}%

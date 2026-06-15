@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization Landscape</title>
+    
+    <!-- Google Fonts: Merriweather, Inter, Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                        mono: ['"Fira Code"', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <style>
+        /* Minimal, strict slider styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+            margin: 8px 0;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 2px;
+            cursor: pointer;
+            background: #475569; /* slate-600 */
+            border-radius: 1px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 14px;
+            width: 8px;
+            border-radius: 1px;
+            background: #94a3b8; /* slate-400 */
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -6px;
+            transition: background 0.2s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            background: #e2e8f0; /* slate-200 */
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-200 font-sans min-h-screen p-4 md:p-8 flex flex-col md:flex-row gap-8">
+
+    <!-- Control Panel -->
+    <div class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-8 p-6 bg-slate-800/50 border border-slate-700/50 rounded-sm h-fit sticky top-8">
+        
+        <div>
+            <h1 class="text-2xl font-serif font-bold text-slate-100 mb-2 leading-snug">Empirical Analysis of Optimization Trajectories</h1>
+            <p class="text-sm text-slate-400 leading-relaxed">Comparative performance of SGD, Adam, and PSO on a non-convex 2D Rastrigin manifold.</p>
+        </div>
+
+        <div class="flex flex-col gap-6">
+            
+            <!-- Learning Rate Control -->
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-baseline">
+                    <label for="lr" class="text-xs font-semibold text-slate-300 uppercase tracking-widest">Learning Rate</label>
+                    <span id="lr-val" class="font-mono text-sm text-slate-300">0.010</span>
+                </div>
+                <input id="lr" type="range" min="0.001" max="0.1" step="0.001" value="0.01">
+            </div>
+
+            <!-- Iterations Control -->
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-baseline">
+                    <label for="iters" class="text-xs font-semibold text-slate-300 uppercase tracking-widest">Iterations</label>
+                    <span id="iters-val" class="font-mono text-sm text-slate-300">50</span>
+                </div>
+                <input id="iters" type="range" min="10" max="200" step="1" value="50">
+            </div>
+
+            <!-- Swarm Size Control -->
+            <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-baseline">
+                    <label for="swarm" class="text-xs font-semibold text-slate-300 uppercase tracking-widest">Swarm Size (PSO)</label>
+                    <span id="swarm-val" class="font-mono text-sm text-slate-300">20</span>
+                </div>
+                <input id="swarm" type="range" min="5" max="100" step="1" value="20">
+            </div>
+
+        </div>
+
+        <!-- Execute Button -->
+        <button id="run-btn" onclick="runOptimization()" 
+                class="w-full py-3 mt-4 rounded-sm font-medium text-white bg-blue-600 hover:bg-blue-500 transition-colors duration-200 disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed">
+            <span id="btn-text">Execute Optimization</span>
+        </button>
+
+    </div>
+
+    <!-- Plot container -->
+    <div class="flex-1 flex flex-col rounded-sm bg-slate-900 border border-slate-700/50 relative min-h-[600px] overflow-hidden">
+        <div id="plot" class="w-full h-full absolute inset-0"></div>
+    </div>
+
+    <script>
+        // 1. Interactive Inputs (Updates monospace text dynamically)
+        const setupSliderDisplay = (sliderId, textId, formatDecimals) => {
+            document.getElementById(sliderId).addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                document.getElementById(textId).innerText = formatDecimals ? val.toFixed(3) : val;
+            });
+        };
+        
+        setupSliderDisplay('lr', 'lr-val', true);
+        setupSliderDisplay('iters', 'iters-val', false);
+        setupSliderDisplay('swarm', 'swarm-val', false);
+
+        // 2. Plotly setup with 2D Rastrigin function
+        function rastrigin(x, y) {
+            const A = 10;
+            return 2 * A + (x**2 - A * Math.cos(2 * Math.PI * x)) + (y**2 - A * Math.cos(2 * Math.PI * y));
+        }
+
+        const x_vals = [];
+        const y_vals = [];
+        for (let i = -5.12; i <= 5.12; i += 0.1) {
+            x_vals.push(i);
+            y_vals.push(i);
+        }
+
+        const z_vals = [];
+        for (let j = 0; j < y_vals.length; j++) {
+            let row = [];
+            for (let i = 0; i < x_vals.length; i++) {
+                row.push(rastrigin(x_vals[i], y_vals[j]));
+            }
+            z_vals.push(row);
+        }
+
+        // Contour map (Viridis scale, no colorbar)
+        const contourTrace = {
+            z: z_vals,
+            x: x_vals,
+            y: y_vals,
+            type: 'contour',
+            colorscale: 'Viridis',
+            showscale: false
+        };
+
+        // Data traces with high-contrast palette
+        const sgdTrace  = { x: [], y: [], mode: 'lines+markers', name: 'SGD', marker: { color: '#f59e0b', size: 6 }, line: { color: '#f59e0b', width: 2 } }; // Amber/Orange
+        const adamTrace = { x: [], y: [], mode: 'lines+markers', name: 'Adam', marker: { color: '#22d3ee', size: 6 }, line: { color: '#22d3ee', width: 2 } }; // Cyan
+        const psoTrace  = { x: [], y: [], mode: 'markers', name: 'PSO', marker: { color: '#ffffff', size: 4 } }; // Pure White
+
+        // Academic strict layout
+        const layout = {
+            title: { text: 'Optimization Landscape (Rastrigin Surface)', font: { family: 'Merriweather', color: '#f1f5f9', size: 16 } },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            xaxis: { 
+                range: [-5.12, 5.12], 
+                gridcolor: '#334155',
+                gridwidth: 0.5,
+                zerolinecolor: '#475569',
+                tickfont: { family: '"Fira Code", monospace', color: '#94a3b8', size: 11 },
+                title: { text: 'Parameter X', font: { family: 'Inter', color: '#cbd5e1', size: 12 } }
+            },
+            yaxis: { 
+                range: [-5.12, 5.12],
+                gridcolor: '#334155',
+                gridwidth: 0.5,
+                zerolinecolor: '#475569',
+                tickfont: { family: '"Fira Code", monospace', color: '#94a3b8', size: 11 },
+                title: { text: 'Parameter Y', font: { family: 'Inter', color: '#cbd5e1', size: 12 } }
+            },
+            legend: { font: { family: 'Inter', color: '#cbd5e1' }, bgcolor: 'rgba(15,23,42,0.6)', bordercolor: '#334155', borderwidth: 1 },
+            margin: { t: 60, l: 60, r: 40, b: 60 }
+        };
+
+        Plotly.newPlot('plot', [contourTrace, sgdTrace, adamTrace, psoTrace], layout, { responsive: true });
+
+        // 3. Application Logic
+        let animationInterval;
+        const btn = document.getElementById('run-btn');
+        const btnText = document.getElementById('btn-text');
+
+        const toggleLoadingState = (isLoading) => {
+            btn.disabled = isLoading;
+            if (isLoading) {
+                btnText.innerText = "Computing Trajectories...";
+            } else {
+                btnText.innerText = "Execute Optimization";
+            }
+        };
+
+        async function runOptimization() {
+            if (animationInterval) clearInterval(animationInterval);
+            toggleLoadingState(true);
+
+            const lr = document.getElementById('lr').value;
+            const iters = document.getElementById('iters').value;
+            const swarm = document.getElementById('swarm').value;
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/run-optimization', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        learning_rate: parseFloat(lr),
+                        iterations: parseInt(iters),
+                        num_particles: parseInt(swarm)
+                    })
+                });
+
+                if (!res.ok) throw new Error("API call failed.");
+
+                const data = await res.json();
+                
+                let curr = 0;
+                const totalIters = data.sgd_path.length;
+
+                animationInterval = setInterval(() => {
+                    if (curr >= totalIters) {
+                        clearInterval(animationInterval);
+                        return;
+                    }
+
+                    const sgdLineX = data.sgd_path.slice(0, curr + 1).map(d => d.x);
+                    const sgdLineY = data.sgd_path.slice(0, curr + 1).map(d => d.y);
+
+                    const adamLineX = data.adam_path.slice(0, curr + 1).map(d => d.x);
+                    const adamLineY = data.adam_path.slice(0, curr + 1).map(d => d.y);
+
+                    const psoX = data.pso_path.map(p => p[curr].x);
+                    const psoY = data.pso_path.map(p => p[curr].y);
+
+                    Plotly.update('plot', {
+                        x: [x_vals, sgdLineX, adamLineX, psoX],
+                        y: [y_vals, sgdLineY, adamLineY, psoY]
+                    }, {}, [0, 1, 2, 3]);
+
+                    curr++;
+                }, 80);
+
+            } catch (error) {
+                console.error(error);
+                alert("Execution failed. Double check FastAPI is running!");
+            } finally {
+                toggleLoadingState(false);
+            }
+        }
+    </script>
+</body>
+</html>
