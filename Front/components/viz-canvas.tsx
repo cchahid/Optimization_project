@@ -7,6 +7,7 @@ import type { PathPoint } from "@/app/page"
 import { useTheme } from "next-themes"
 import { ThemeToggle } from "./theme-toggle"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   BarChart2,
   Crosshair,
@@ -19,6 +20,10 @@ import {
   Download,
   Activity,
   X,
+  Zap,
+  Target,
+  CheckCircle,
+  Trophy
 } from "lucide-react"
 
 // Dynamically import Plotly to avoid SSR issues
@@ -291,10 +296,28 @@ export function VizCanvas({
     : "[-, -]"
 
   const resultsData = [
-    { name: "SGD", color: "bg-accent-amber", textCls: "text-accent-amber", time: "0.22", loss: "0.45", acc: "85%" },
-    { name: "Adam", color: "bg-accent-cyan", textCls: "text-accent-cyan", time: "0.15", loss: "0.08", acc: "100%" },
-    { name: "PSO", color: "bg-accent-white", textCls: theme === "light" ? "text-slate-800" : "text-foreground", time: "1.05", loss: "0.21", acc: "92%" },
+    { name: "SGD", color: "bg-accent-amber", textCls: "text-accent-amber", hex: "#f59e0b", time: 0.179, loss: 0.941, acc: "70%" },
+    { name: "Adam", color: "bg-accent-cyan", textCls: "text-accent-cyan", hex: "#22d3ee", time: 0.155, loss: 0.083, acc: "100%" },
+    { name: "PSO", color: "bg-accent-white", textCls: theme === "light" ? "text-slate-800" : "text-foreground", hex: theme === "light" ? "#475569" : "#e2e8f0", time: 0.425, loss: 0.037, acc: "100%" },
   ]
+
+  const barChartLayout = useMemo<Partial<Plotly.Layout>>(() => {
+    const isLight = theme === "light"
+    return {
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent",
+      margin: { l: 40, r: 20, t: 30, b: 40 },
+      xaxis: {
+        gridcolor: isLight ? "#e2e8f0" : "#334155",
+        tickfont: { family: "var(--font-geist-mono, monospace)", size: 10, color: isLight ? "#64748b" : "#94a3b8" }
+      },
+      yaxis: {
+        gridcolor: isLight ? "#e2e8f0" : "#334155",
+        tickfont: { family: "var(--font-geist-mono, monospace)", size: 10, color: isLight ? "#64748b" : "#94a3b8" }
+      },
+      showlegend: false
+    }
+  }, [theme])
 
   return (
     <main className="flex-1 flex flex-col h-screen overflow-hidden">
@@ -334,68 +357,116 @@ export function VizCanvas({
           </div>
 
           {/* TAB 1: Training Convergence */}
-          <TabsContent value="convergence" className="flex-1 min-h-0 outline-none flex flex-col m-0 data-[state=active]:flex relative rounded-md border border-panel-border bg-card overflow-hidden">
-            {isTraining && (
-              <div className="absolute inset-0 flex items-center justify-center z-20 bg-card/50 backdrop-blur-sm">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-accent-cyan animate-pulse" />
-                  <span className="font-mono text-xs text-accent-cyan tracking-widest uppercase">
-                    Executing Training Loop...
-                  </span>
+          <TabsContent value="convergence" className="flex-1 min-h-0 outline-none flex flex-col m-0 data-[state=active]:flex rounded-md border border-panel-border bg-card p-6 overflow-y-auto">
+            <div className="max-w-5xl mx-auto w-full space-y-6">
+              
+              {/* Top Row: Training KPIs */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">
+                    <CheckCircle className="size-5 text-accent-cyan" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Training Status</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">Completed <span className="text-xs font-normal text-muted-foreground ml-1">(100 / 100 Epochs)</span></p>
+                  </div>
+                </div>
+                
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-white/10 flex items-center justify-center border border-panel-border">
+                    <Trophy className="size-5 text-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Best Loss Achieved</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">0.037 <span className="text-xs font-normal text-muted-foreground ml-1">(Optimizer: PSO)</span></p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-amber/10 flex items-center justify-center border border-accent-amber/20">
+                    <Zap className="size-5 text-accent-amber" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Fastest Initial Drop</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">Adam <span className="text-[10px] font-normal text-muted-foreground ml-1">(Reached &lt; 0.1 in 15 epochs)</span></p>
+                  </div>
                 </div>
               </div>
-            )}
-            
-            {trainingData && (
-              <Plot
-                data={[
-                  {
-                    type: "scatter",
-                    mode: "lines",
-                    x: trainingData.epochs,
-                    y: trainingData.sgd_loss,
-                    name: "SGD",
-                    line: { color: "#f59e0b", width: 2 }
-                  },
-                  {
-                    type: "scatter",
-                    mode: "lines",
-                    x: trainingData.epochs,
-                    y: trainingData.adam_loss,
-                    name: "Adam",
-                    line: { color: "#22d3ee", width: 2 }
-                  },
-                  {
-                    type: "scatter",
-                    mode: "lines",
-                    x: trainingData.epochs,
-                    y: trainingData.pso_loss,
-                    name: "PSO",
-                    line: { color: theme === "light" ? "#475569" : "#e2e8f0", width: 2 }
-                  }
-                ]}
-                layout={{ ...convergenceLayout, autosize: true }}
-                config={{ displayModeBar: false, responsive: true }}
-                style={{ width: "100%", height: "100%" }}
-                useResizeHandler
-              />
-            )}
-            
-            {!trainingData && !isTraining && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 pointer-events-none">
-                <div className="size-14 rounded-full border border-panel-border/60 flex items-center justify-center bg-background/60">
-                  <Activity className="size-6 text-muted-foreground/40" />
-                </div>
-                <div className="text-center">
-                  <p className="font-mono text-[11px] text-muted-foreground/50 tracking-widest uppercase">
-                    No Training Data
-                  </p>
-                  <p className="font-mono text-[9px] text-muted-foreground/30 mt-1 tracking-wider">
-                    Click 'Execute Training (Iris)' to begin
-                  </p>
-                </div>
-              </div>
-            )}
+
+              {/* Main Chart Area */}
+              <Card className="border-panel-border bg-background/50 overflow-hidden flex flex-col h-[500px] shadow-sm">
+                <CardHeader className="pb-4 border-b border-panel-border bg-panel/30">
+                  <CardTitle className="text-base font-heading text-foreground">Cross-Entropy Loss over Epochs</CardTitle>
+                  <CardDescription className="text-xs font-mono text-muted-foreground mt-1">
+                    Comparative learning curves for SGD, Adam, and PSO on the Iris dataset.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex-1 p-0 relative min-h-0">
+                  {isTraining && (
+                    <div className="absolute inset-0 flex items-center justify-center z-20 bg-background/50 backdrop-blur-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="size-2 rounded-full bg-accent-cyan animate-pulse" />
+                        <span className="font-mono text-xs text-accent-cyan tracking-widest uppercase">
+                          Executing Training Loop...
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {trainingData && (
+                    <Plot
+                      data={[
+                        {
+                          type: "scatter",
+                          mode: "lines",
+                          x: trainingData.epochs,
+                          y: trainingData.sgd_loss,
+                          name: "SGD",
+                          line: { color: "#f59e0b", width: 2 }
+                        },
+                        {
+                          type: "scatter",
+                          mode: "lines",
+                          x: trainingData.epochs,
+                          y: trainingData.adam_loss,
+                          name: "Adam",
+                          line: { color: "#22d3ee", width: 2 }
+                        },
+                        {
+                          type: "scatter",
+                          mode: "lines",
+                          x: trainingData.epochs,
+                          y: trainingData.pso_loss,
+                          name: "PSO",
+                          line: { color: theme === "light" ? "#475569" : "#e2e8f0", width: 2 }
+                        }
+                      ]}
+                      layout={{ ...convergenceLayout, autosize: true }}
+                      config={{ displayModeBar: false, responsive: true }}
+                      style={{ width: "100%", height: "100%" }}
+                      useResizeHandler
+                    />
+                  )}
+                  
+                  {!trainingData && !isTraining && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 pointer-events-none">
+                      <div className="size-14 rounded-full border border-panel-border/60 flex items-center justify-center bg-background/60">
+                        <Activity className="size-6 text-muted-foreground/40" />
+                      </div>
+                      <div className="text-center">
+                        <p className="font-mono text-[11px] text-muted-foreground/50 tracking-widest uppercase">
+                          No Training Data
+                        </p>
+                        <p className="font-mono text-[9px] text-muted-foreground/30 mt-1 tracking-wider">
+                          Click 'Execute Training (Iris)' to begin
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+            </div>
           </TabsContent>
 
           {/* TAB 2: Optimization Landscape */}
@@ -492,8 +563,42 @@ export function VizCanvas({
 
           {/* TAB 3: Results Comparison */}
           <TabsContent value="results" className="flex-1 min-h-0 outline-none flex flex-col m-0 data-[state=active]:flex rounded-md border border-panel-border bg-card p-6 overflow-y-auto">
-            <div className="max-w-4xl mx-auto w-full space-y-8">
+            <div className="max-w-5xl mx-auto w-full space-y-8">
               
+              {/* Top Row: KPI Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">
+                    <Zap className="size-5 text-accent-cyan" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Fastest Convergence</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">Adam <span className="text-xs font-normal text-muted-foreground ml-1">(0.155s)</span></p>
+                  </div>
+                </div>
+                
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-white/10 flex items-center justify-center border border-panel-border">
+                    <TrendingDown className="size-5 text-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Lowest Final Loss</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">PSO <span className="text-xs font-normal text-muted-foreground ml-1">(0.037)</span></p>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                  <div className="size-10 rounded-full bg-accent-amber/10 flex items-center justify-center border border-accent-amber/20">
+                    <Target className="size-5 text-accent-amber" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Peak Test Accuracy</p>
+                    <p className="font-heading text-xl font-bold text-foreground mt-0.5">Adam &amp; PSO <span className="text-xs font-normal text-muted-foreground ml-1">(100%)</span></p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Section: Summary Table */}
               <div>
                 <h3 className="font-heading text-lg font-semibold text-foreground mb-4">Algorithm Performance Summary</h3>
                 <div className="rounded-md border border-panel-border bg-background/50 overflow-hidden">
@@ -506,7 +611,7 @@ export function VizCanvas({
                         <th className="px-5 py-3.5 font-medium text-right">Test Accuracy</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-panel-border/50 font-mono">
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-mono">
                       {resultsData.map((row) => (
                         <tr key={row.name} className="hover:bg-muted/30 transition-colors">
                           <td className="px-5 py-4">
@@ -515,7 +620,7 @@ export function VizCanvas({
                               <span className={cn("font-bold tracking-wider", row.textCls)}>{row.name}</span>
                             </div>
                           </td>
-                          <td className="px-5 py-4 text-right tabular-nums text-muted-foreground">{row.time}</td>
+                          <td className="px-5 py-4 text-right tabular-nums text-muted-foreground">{row.time}s</td>
                           <td className="px-5 py-4 text-right tabular-nums text-foreground">{row.loss}</td>
                           <td className="px-5 py-4 text-right tabular-nums font-semibold text-accent-cyan">{row.acc}</td>
                         </tr>
@@ -525,46 +630,41 @@ export function VizCanvas({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                {/* Execution Time Chart */}
-                <div className="p-6 rounded-md border border-panel-border bg-background/50 flex flex-col">
-                  <h4 className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase mb-5">Execution Time (Lower is Better)</h4>
-                  <div className="space-y-5 flex-1 flex flex-col justify-center">
-                    {resultsData.map(row => (
-                      <div key={row.name} className="space-y-1.5">
-                        <div className="flex justify-between text-xs font-mono">
-                          <span className={row.textCls}>{row.name}</span>
-                          <span className="text-muted-foreground tabular-nums">{row.time}s</span>
-                        </div>
-                        <div className="h-1.5 bg-panel-border rounded-full overflow-hidden">
-                          <div 
-                            className={cn("h-full transition-all duration-1000", row.color)} 
-                            style={{ width: `${(parseFloat(row.time) / 1.05) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+              {/* Bottom Section: Visual Bar Charts */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="p-6 rounded-md border border-panel-border bg-background/50 flex flex-col h-[320px]">
+                  <h4 className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase mb-2">Execution Time Comparison (s)</h4>
+                  <div className="flex-1 min-h-0 relative">
+                    <Plot
+                      data={[{
+                        type: "bar",
+                        x: resultsData.map(r => r.name),
+                        y: resultsData.map(r => r.time),
+                        marker: { color: resultsData.map(r => r.hex) }
+                      }]}
+                      layout={{ ...barChartLayout, autosize: true }}
+                      config={{ displayModeBar: false, responsive: true }}
+                      style={{ width: "100%", height: "100%" }}
+                      useResizeHandler
+                    />
                   </div>
                 </div>
 
-                {/* Final Loss Chart */}
-                <div className="p-6 rounded-md border border-panel-border bg-background/50 flex flex-col">
-                  <h4 className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase mb-5">Final Train Loss (Lower is Better)</h4>
-                  <div className="space-y-5 flex-1 flex flex-col justify-center">
-                    {resultsData.map(row => (
-                      <div key={row.name} className="space-y-1.5">
-                        <div className="flex justify-between text-xs font-mono">
-                          <span className={row.textCls}>{row.name}</span>
-                          <span className="text-muted-foreground tabular-nums">{row.loss}</span>
-                        </div>
-                        <div className="h-1.5 bg-panel-border rounded-full overflow-hidden">
-                          <div 
-                            className={cn("h-full transition-all duration-1000", row.color)} 
-                            style={{ width: `${(parseFloat(row.loss) / 0.45) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+                <div className="p-6 rounded-md border border-panel-border bg-background/50 flex flex-col h-[320px]">
+                  <h4 className="font-mono text-[10px] text-muted-foreground tracking-widest uppercase mb-2">Final Loss Comparison</h4>
+                  <div className="flex-1 min-h-0 relative">
+                    <Plot
+                      data={[{
+                        type: "bar",
+                        x: resultsData.map(r => r.name),
+                        y: resultsData.map(r => r.loss),
+                        marker: { color: resultsData.map(r => r.hex) }
+                      }]}
+                      layout={{ ...barChartLayout, autosize: true }}
+                      config={{ displayModeBar: false, responsive: true }}
+                      style={{ width: "100%", height: "100%" }}
+                      useResizeHandler
+                    />
                   </div>
                 </div>
               </div>

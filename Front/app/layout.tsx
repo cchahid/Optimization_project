@@ -2,6 +2,7 @@ import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Inter, Lora, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({ variable: '--font-inter', subsets: ['latin'] })
@@ -37,6 +38,7 @@ export default function RootLayout({
         >
           {children}
           {process.env.NODE_ENV === 'production' && <Analytics />}
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>
