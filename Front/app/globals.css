@@ -58,8 +58,72 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ─── Strict flat dark mode — slate-950 palette ─── */
+/* ─── Light Mode ─── */
 :root {
+  color-scheme: light;
+
+  /* Core */
+  --background:        oklch(0.98 0.002 255);
+  --foreground:        oklch(0.112 0.008 263);
+
+  /* Cards / panels */
+  --card:              oklch(1 0 0);
+  --card-foreground:   oklch(0.112 0.008 263);
+  --panel:             oklch(0.96 0.005 255);
+  --panel-border:      oklch(0.92 0.01 255);
+
+  /* Popovers */
+  --popover:           oklch(1 0 0);
+  --popover-foreground: oklch(0.112 0.008 263);
+
+  /* Primary action */
+  --primary:           oklch(0.22 0.008 263);
+  --primary-foreground: oklch(0.98 0.002 255);
+
+  /* Secondary / muted */
+  --secondary:         oklch(0.92 0.01 255);
+  --secondary-foreground: oklch(0.22 0.008 263);
+  --muted:             oklch(0.92 0.01 255);
+  --muted-foreground:  oklch(0.40 0.008 263);
+
+  /* Accent */
+  --accent:            oklch(0.92 0.01 255);
+  --accent-foreground: oklch(0.22 0.008 263);
+
+  /* Semantic accents */
+  --accent-amber:      oklch(0.65 0.15 71);
+  --accent-cyan:       oklch(0.60 0.11 213);
+  --accent-white:      oklch(0.40 0.008 263);
+
+  /* Utility */
+  --destructive:       oklch(0.60 0.2 25);
+  --border:            oklch(0.90 0.01 255);
+  --input:             oklch(0.90 0.01 255);
+  --ring:              oklch(0.40 0.008 263);
+  --label:             oklch(0.40 0.008 263);
+
+  /* Charts */
+  --chart-1:           oklch(0.65 0.15 71);
+  --chart-2:           oklch(0.60 0.11 213);
+  --chart-3:           oklch(0.40 0.008 263);
+  --chart-4:           oklch(0.56 0.007 255);
+  --chart-5:           oklch(0.80 0.008 263);
+
+  --radius: 0.375rem;
+
+  /* Sidebar */
+  --sidebar:                oklch(0.98 0.002 255);
+  --sidebar-foreground:     oklch(0.112 0.008 263);
+  --sidebar-primary:        oklch(0.22 0.008 263);
+  --sidebar-primary-foreground: oklch(0.98 0.002 255);
+  --sidebar-accent:         oklch(0.92 0.01 255);
+  --sidebar-accent-foreground: oklch(0.22 0.008 263);
+  --sidebar-border:         oklch(0.90 0.01 255);
+  --sidebar-ring:           oklch(0.40 0.008 263);
+}
+
+/* ─── Strict flat dark mode — slate-950 palette ─── */
+.dark {
   color-scheme: dark;
 
   /* Core */
@@ -109,8 +173,6 @@
   --chart-4:           oklch(0.56  0.007 255);
   --chart-5:           oklch(0.40  0.008 263);
 
-  --radius: 0.375rem;
-
   /* Sidebar (reuse panel) */
   --sidebar:                oklch(0.155 0.008 263);
   --sidebar-foreground:     oklch(0.92  0.005 255);
@@ -137,26 +199,46 @@
 /* ─── Custom grid background for the viz canvas ─── */
 .bg-grid-pattern {
   background-image:
+    linear-gradient(oklch(0.5 0 0 / 15%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.5 0 0 / 15%) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.dark .bg-grid-pattern {
+  background-image:
     linear-gradient(oklch(0.26 0.008 263 / 35%) 1px, transparent 1px),
     linear-gradient(90deg, oklch(0.26 0.008 263 / 35%) 1px, transparent 1px);
-  background-size: 32px 32px;
 }
 
 .bg-grid-pattern-fine {
   background-image:
+    linear-gradient(oklch(0.5 0 0 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.5 0 0 / 8%) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+.dark .bg-grid-pattern-fine {
+  background-image:
     linear-gradient(oklch(0.26 0.008 263 / 18%) 1px, transparent 1px),
     linear-gradient(90deg, oklch(0.26 0.008 263 / 18%) 1px, transparent 1px);
-  background-size: 8px 8px;
 }
 
 /* ─── Slider accent override (cyan tint for scientific feel) ─── */
 [data-slot="slider-range"] {
+  background-color: oklch(0.6 0.11 213 / 80%);
+}
+.dark [data-slot="slider-range"] {
   background-color: oklch(0.78 0.11 213 / 80%);
 }
 [data-slot="slider-thumb"] {
+  border-color: oklch(0.6 0.11 213);
+  background-color: oklch(1 0 0);
+}
+.dark [data-slot="slider-thumb"] {
   border-color: oklch(0.78 0.11 213);
   background-color: oklch(0.155 0.008 263);
 }
 [data-slot="slider-thumb"]:focus-visible {
+  box-shadow: 0 0 0 3px oklch(0.6 0.11 213 / 30%);
+}
+.dark [data-slot="slider-thumb"]:focus-visible {
   box-shadow: 0 0 0 3px oklch(0.78 0.11 213 / 30%);
 }

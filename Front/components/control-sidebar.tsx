@@ -18,8 +18,10 @@ import {
 import { cn } from "@/lib/utils"
 
 interface ControlSidebarProps {
-  onExecute: () => void
-  isLoading: boolean
+  onExecuteTraining: () => void
+  onExecuteOptimization: () => void
+  isTraining: boolean
+  isOptimizing: boolean
   params: {
     learningRate: number
     iterations: number
@@ -86,7 +88,14 @@ function MetricChip({ label, value }: { label: string; value: string }) {
   )
 }
 
-export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }: ControlSidebarProps) {
+export function ControlSidebar({ 
+  onExecuteTraining, 
+  onExecuteOptimization, 
+  isTraining, 
+  isOptimizing, 
+  params, 
+  onParamsChange 
+}: ControlSidebarProps) {
   const lrDisplay = params.learningRate.toFixed(4)
   const iterDisplay = String(params.iterations).padStart(3, "0")
   const swarmDisplay = String(params.swarmSize).padStart(2, "0")
@@ -142,7 +151,7 @@ export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }:
             min={0.001}
             max={0.1}
             step={0.001}
-            onChange={([v]) => onParamsChange({ ...params, learningRate: v })}
+            onChange={(v: any) => onParamsChange({ ...params, learningRate: v })}
           />
 
           <Separator className="opacity-30" />
@@ -155,7 +164,7 @@ export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }:
             min={10}
             max={200}
             step={1}
-            onChange={([v]) => onParamsChange({ ...params, iterations: v })}
+            onChange={(v: any) => onParamsChange({ ...params, iterations: v })}
           />
 
           <Separator className="opacity-30" />
@@ -168,7 +177,7 @@ export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }:
             min={10}
             max={50}
             step={1}
-            onChange={([v]) => onParamsChange({ ...params, swarmSize: v })}
+            onChange={(v: any) => onParamsChange({ ...params, swarmSize: v })}
             unit=" agents"
           />
         </div>
@@ -207,11 +216,11 @@ export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }:
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Execute button */}
-      <div className="px-5 py-5 border-t border-panel-border">
+      {/* Execute buttons */}
+      <div className="px-5 py-5 border-t border-panel-border flex flex-col gap-3">
         <Button
-          onClick={onExecute}
-          disabled={isLoading}
+          onClick={onExecuteTraining}
+          disabled={isTraining}
           className={cn(
             "w-full font-mono text-xs tracking-widest uppercase h-10",
             "bg-primary text-primary-foreground",
@@ -219,19 +228,42 @@ export function ControlSidebar({ onExecute, isLoading, params, onParamsChange }:
             "disabled:opacity-60"
           )}
         >
-          {isLoading ? (
+          {isTraining ? (
             <>
               <Loader2 className="size-3.5 animate-spin mr-2" />
-              Computing Trajectories...
+              Training...
             </>
           ) : (
             <>
               <Play className="size-3.5 mr-2" />
-              Execute Optimization
+              Execute Training (Iris)
             </>
           )}
         </Button>
-        <p className="text-center text-[9px] font-mono text-muted-foreground/50 mt-2 tracking-wider">
+
+        <Button
+          onClick={onExecuteOptimization}
+          disabled={isOptimizing}
+          className={cn(
+            "w-full font-mono text-[10px] tracking-widest uppercase h-10",
+            "bg-secondary text-secondary-foreground border border-panel-border",
+            "hover:bg-secondary/80 transition-colors",
+            "disabled:opacity-60"
+          )}
+        >
+          {isOptimizing ? (
+            <>
+              <Loader2 className="size-3 animate-spin mr-2" />
+              Computing Trajectories...
+            </>
+          ) : (
+            <>
+              <Play className="size-3 mr-2" />
+              Execute 2D Optimization
+            </>
+          )}
+        </Button>
+        <p className="text-center text-[9px] font-mono text-muted-foreground/50 mt-1 tracking-wider">
           EST. RUNTIME ≈ {(params.iterations * 0.012).toFixed(2)}s
         </p>
       </div>

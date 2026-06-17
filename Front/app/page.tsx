@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react"
 import { ControlSidebar } from "@/components/control-sidebar"
 import { VizCanvas } from "@/components/viz-canvas"
 
-interface Params {
+export interface Params {
   learningRate: number
   iterations: number
   swarmSize: number
@@ -15,10 +15,11 @@ export interface PathPoint {
   y: number
 }
 
-export interface OptimizationPaths {
-  sgdPath: PathPoint[]
-  adamPath: PathPoint[]
-  psoPaths: PathPoint[][]
+export interface TrainingData {
+  epochs: number[]
+  sgd_loss: number[]
+  adam_loss: number[]
+  pso_loss: number[]
 }
 
 export default function DashboardPage() {
@@ -27,21 +28,43 @@ export default function DashboardPage() {
     iterations: 100,
     swarmSize: 30,
   })
-  const [isComputing, setIsComputing] = useState(false)
-  const [hasRun, setHasRun] = useState(false)
+  
+  // -- 2D Optimization States --
+  const [isOptimizing, setIsOptimizing] = useState(false)
+  const [hasOptimized, setHasOptimized] = useState(false)
   const [runCount, setRunCount] = useState(0)
 
-  // Animated path state — these grow incrementally via setInterval
   const [sgdPath, setSgdPath] = useState<PathPoint[]>([])
   const [adamPath, setAdamPath] = useState<PathPoint[]>([])
   const [psoPaths, setPsoPaths] = useState<PathPoint[][]>([])
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // -- NN Training States --
+  const [isTraining, setIsTraining] = useState(false)
+  const [trainingData, setTrainingData] = useState<TrainingData | null>(null)
+
+  // ─── Execution Functions ─────────────────────────────────────────────────────
+
+  const runTraining = useCallback(async () => {
+    if (isTraining) return
+    setIsTraining(true)
+    try {
+      const res = await fetch("http://127.0.0.1:8000/training-convergence")
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      const data = await res.json()
+      setTrainingData(data)
+    } catch (err) {
+      console.error("Failed to fetch training data", err)
+    } finally {
+      setIsTraining(false)
+    }
+  }, [isTraining])
+
   const runOptimization = useCallback(async () => {
-    if (isComputing) return
-    setIsComputing(true)
-    setHasRun(false)
+    if (isOptimizing) return
+    setIsOptimizing(true)
+    setHasOptimized(false)
     setSgdPath([])
     setAdamPath([])
     setPsoPaths([])
@@ -99,29 +122,33 @@ export default function DashboardPage() {
 
       if (currentStep >= maxLen) {
         if (intervalRef.current) clearInterval(intervalRef.current)
-        setIsComputing(false)
-        setHasRun(true)
+        setIsOptimizing(false)
+        setHasOptimized(true)
         setRunCount((c) => c + 1)
       }
     }, 50)
-  }, [isComputing, params])
+  }, [isOptimizing, params])
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       <ControlSidebar
-        onExecute={runOptimization}
-        isLoading={isComputing}
+        onExecuteTraining={runTraining}
+        onExecuteOptimization={runOptimization}
+        isTraining={isTraining}
+        isOptimizing={isOptimizing}
         params={params}
         onParamsChange={setParams}
       />
       <VizCanvas
-        isLoading={isComputing}
-        hasRun={hasRun}
+        isOptimizing={isOptimizing}
+        hasOptimized={hasOptimized}
         params={params}
         runCount={runCount}
         sgdPath={sgdPath}
         adamPath={adamPath}
         psoPaths={psoPaths}
+        isTraining={isTraining}
+        trainingData={trainingData}
       />
     </div>
   )

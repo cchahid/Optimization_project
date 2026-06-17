@@ -127,3 +127,47 @@ def run_optimization(params: OptimizationParams):
         "pso_path": pso_path
     }
 
+from src.dataset import get_dataloaders
+from src.models import SimpleMLP
+from src.train import train_gradient_descent
+from src.optimizers import ParticleSwarmOptimizer
+import torch.nn as nn
+import torch.optim as optim
+
+@app.get("/training-convergence")
+def training_convergence():
+    epochs = 100
+    train_loader, test_loader, num_features, num_classes = get_dataloaders(batch_size=32)
+    criterion = nn.CrossEntropyLoss()
+
+    # --- SGD ---
+    model_sgd = SimpleMLP(num_features, num_classes)
+    opt_sgd = optim.SGD(model_sgd.parameters(), lr=0.05)
+    sgd_loss, _ = train_gradient_descent(model_sgd, train_loader, opt_sgd, criterion, epochs=epochs)
+
+    # --- Adam ---
+    model_adam = SimpleMLP(num_features, num_classes)
+    opt_adam = optim.Adam(model_adam.parameters(), lr=0.01)
+    adam_loss, _ = train_gradient_descent(model_adam, train_loader, opt_adam, criterion, epochs=epochs)
+
+    # --- PSO ---
+    model_pso = SimpleMLP(num_features, num_classes)
+    pso = ParticleSwarmOptimizer(model_pso, num_particles=30)
+    
+    # Extract all training data for PSO since it operates on the whole dataset per iteration
+    X_train_list, y_train_list = [], []
+    for X_batch, y_batch in train_loader:
+        X_train_list.append(X_batch)
+        y_train_list.append(y_batch)
+    X_train_full = torch.cat(X_train_list)
+    y_train_full = torch.cat(y_train_list)
+
+    pso_loss = pso.optimize(X_train_full, y_train_full, criterion, iterations=epochs)
+
+    return {
+        "epochs": list(range(1, epochs + 1)),
+        "sgd_loss": sgd_loss,
+        "adam_loss": adam_loss,
+        "pso_loss": pso_loss
+    }
+
