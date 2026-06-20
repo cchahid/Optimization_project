@@ -1,5 +1,8 @@
-torch
-scikit-learn
-pandas
-matplotlib
-numpy
+torch==2.12.1
+scikit-learn==1.9.0
+pandas==3.0.3
+matplotlib==3.11.0
+numpy==2.4.6
+fastapi==0.138.0
+uvicorn==0.49.0
+pydantic>=2.9.0

@@ -16,8 +16,11 @@ export function useTraining() {
     if (isTraining) return
     setIsTraining(true)
     try {
-      const res = await fetch("http://127.0.0.1:8000/training-convergence")
+      // Updated to point to the correct GET endpoint for training convergence data
+      const res = await fetch("https://laughing-orbit-jx7v5ww7rwp3p4q-8000.app.github.dev/training-convergence")
+      
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      
       const data = await res.json()
       setTrainingData(data)
     } catch (err) {

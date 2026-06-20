@@ -36,7 +36,8 @@ export function useOptimization() {
     let isSuccess = false
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/run-optimization", {
+      // Updated endpoint URL to point directly to your public Codespace proxy port
+      const res = await fetch("https://laughing-orbit-jx7v5ww7rwp3p4q-8000.app.github.dev/run-optimization", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
