@@ -3,7 +3,7 @@
 % --- Packages ---
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[french]{babel}
+\usepackage[english, french]{babel} % English as primary, French for title page elements
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -14,24 +14,54 @@
 \usepackage{titlesec}
 \usepackage{xcolor}
 \usepackage{caption}
+\usepackage{subcaption}
+\usepackage{cite}
+\usepackage{listings} % For code snippets
 
-% --- Mise en page ---
+% --- Layout & Formatting ---
 \geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
 \hypersetup{
     colorlinks=true,
     linkcolor=blue!70!black,
     urlcolor=blue!70!black,
+    citecolor=green!50!black
 }
 
+% --- Code Snippet Styling ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{pystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=pystyle}
+
 \begin{document}
+\selectlanguage{french}
 
 % ==========================================
-%              PAGE DE GARDE
+%                  TITLE PAGE
 % ==========================================
 \begin{titlepage}
     \centering
     
-    % --- En-tête avec les logos ---
     \begin{minipage}{0.45\textwidth}
         \begin{flushleft}
             \includegraphics[width=0.9\textwidth]{fsbm_logo.png}
@@ -46,28 +76,27 @@
 
     \vspace*{2cm}
 
-    % --- Nom de l'université et de la formation ---
     \textsc{\LARGE Université Hassan II de Casablanca}\\[0.5cm]
     \textsc{\Large Faculté des Sciences Ben M'Sick}\\[0.5cm]
     \textsc{\large Master Data Science et Big Data}\\[2cm]
 
-    % --- Titre du rapport ---
     \rule{\linewidth}{0.5mm} \\[0.5cm]
-    { \huge \bfseries Analyse Comparative :\\[0.3cm] Métaheuristiques vs Descente de Gradient \\[0.5cm] }
+    { \huge \bfseries Comparative Analysis Report:\\[0.3cm] Metaheuristics vs. Gradient Descent \\[0.5cm] }
     \rule{\linewidth}{0.5mm} \\[1.5cm]
 
-    % --- Sous-titre ---
-    \Large \textit{Application à la classification sur le dataset Iris}\\[3cm]
+    \Large \textit{Application to Classification Tasks on the Iris Dataset and 2D Optimization Surfaces}\\[3cm]
 
-    % --- Auteur et informations annexes ---
-    \begin{minipage}{0.45\textwidth}
+    \begin{minipage}{0.55\textwidth}
         \begin{flushleft} \large
             \emph{Réalisé par :}\\
-            \textbf{Achraf Chahid}
+            \textbf{Achraf Chahid}\\
+            \textbf{Mohammed Anouar}\\
+            \textbf{Mohammed Khalil Aboussaad}\\
+            \textbf{Alaa Zoubir}
         \end{flushleft}
     \end{minipage}
     \hfill
-    \begin{minipage}{0.45\textwidth}
+    \begin{minipage}{0.35\textwidth}
         \begin{flushright} \large
             \emph{Année Universitaire :}\\
             \textbf{2025 - 2026}
@@ -75,137 +104,280 @@
     \end{minipage}
 
     \vfill
-
-    % --- Date ---
     {\large \today}
 \end{titlepage}
 
 % ==========================================
-%              CORPS DU DOCUMENT
+%            TABLE OF CONTENTS
 % ==========================================
 \newpage
+\selectlanguage{english}
 \tableofcontents
 \newpage
 
-% ---------------------------------------------------------
+% ==========================================
+%              1. INTRODUCTION
+% ==========================================
 \section{Introduction}
-L'entraînement des réseaux de neurones profonds repose fondamentalement sur la minimisation d'une fonction de perte dans un espace multidimensionnel. Historiquement, les méthodes d'optimisation basées sur le gradient, telles que la descente de gradient stochastique (SGD) et ses variantes adaptatives (Adam), constituent le standard industriel. Elles s'appuient sur la dérivabilité de la fonction objectif pour converger rapidement vers un minimum local.
 
-Cependant, face à des fonctions non lisses, non différentiables, ou des paysages d'optimisation fortement non convexes criblés de minima locaux trompeurs, ces méthodes peuvent échouer. C'est dans ce contexte que les métaheuristiques, inspirées de processus naturels, offrent une alternative robuste. L'optimisation par essaim particulaire (PSO - \textit{Particle Swarm Optimization}) en est un excellent représentant, privilégiant une exploration globale stochastique plutôt qu'une exploitation purement locale.
+\subsection{Context and Motivation}
+Training deep neural networks fundamentally relies on the minimization of a loss function within a high-dimensional, highly non-convex parameter space. Historically, first-order gradient-based optimization methods, such as Stochastic Gradient Descent (SGD) and its adaptive variants like Adaptive Moment Estimation (Adam), have established themselves as the industry standard. These algorithms leverage backpropagation to calculate exact partial derivatives, iteratively shifting network weights in the direction of steepest descent. 
 
-L'objectif de ce projet est de réaliser une étude empirique comparant rigoureusement SGD, Adam et PSO. Pour éviter la malédiction de la dimensionnalité qui pénalise dramatiquement les méthodes populationnelles comme PSO, l'étude s'appuie sur un problème de complexité maîtrisée : la classification multiclasse du dataset Iris. Afin d'enrichir l'analyse, cette implémentation algorithmique s'accompagne du développement d'une architecture full-stack (API et Interface Web) permettant la simulation visuelle de ces trajectoires d'optimisation.
+Despite their computational efficiency and widespread success, gradient-based methods suffer from intrinsic vulnerabilities. Because they rely heavily on local curvature metrics, they are particularly prone to getting trapped in sub-optimal local minima, experiencing stagnation at saddle points, or oscillating wildly in regions characterized by sharp pathological curvatures. 
 
-% ---------------------------------------------------------
-\section{Méthodologie et Architecture}
+To overcome these architectural constraints, population-based stochastic optimization algorithms, known as metaheuristics, provide a compelling alternative. Particle Swarm Optimization (PSO), inspired by the social foraging behaviors of bird flocks and fish schools, navigates the search space through collaborative exploration rather than analytical derivative computation. By evaluating global topology rather than immediate local gradients, metaheuristics exhibit an enhanced capacity to bypass sub-optimal local basins.
 
-\subsection{Données et Modélisation Mathématique}
-Le dataset Iris (150 échantillons, 4 caractéristiques continues, 3 classes cibles) a été partitionné selon un ratio strict de 80/20 pour séparer les ensembles d'apprentissage et de test. Une standardisation (Z-score) a été appliquée en amont pour assurer la stabilité numérique des gradients.
+\subsection{Project Objectives}
+The primary objective of this project is to perform a rigorous empirical comparative study between classical gradient descent (SGD), adaptive gradient descent (Adam), and a derivative-free metaheuristic (PSO). 
 
-Afin d'isoler véritablement l'impact de l'algorithme d'optimisation sur l'apprentissage, un Perceptron Multicouche (MLP) minimaliste a été modélisé en utilisant le framework PyTorch. L'architecture se définit comme suit :
-\begin{itemize}
-    \item Une couche d'entrée $X \in \mathbb{R}^{4}$.
-    \item Une couche cachée dense composée de 10 neurones, activée par une fonction non linéaire ReLU : $h = \max(0, W_1 X + b_1)$.
-    \item Une couche de sortie $Y \in \mathbb{R}^{3}$, dont la perte est évaluée via l'entropie croisée (\textit{Cross-Entropy Loss}).
-\end{itemize}
-Ce modèle totalise exactement 83 paramètres optimisables (poids et biais). C'est ce vecteur $\theta \in \mathbb{R}^{83}$ que nos optimiseurs devront calibrer.
+To balance experimental validity with computational constraints, the benchmarking framework is deployed on a well-defined multi-class classification problem using the Iris dataset. Furthermore, to evaluate the algorithms' resilience against deceptive mathematical landscapes, they are evaluated on the highly non-convex 2D Rastrigin function. 
 
-\subsection{Les Algorithmes Déployés}
+Finally, to bridge theoretical data science with robust software engineering principles, this work incorporates the creation of a decoupled full-stack architecture, providing a real-time web application to simulate, monitor, and visualize optimization trajectories dynamically.
+
+% ==========================================
+%          2. LITERATURE REVIEW
+% ==========================================
+\section{Literature Review}
+
+The exploration of optimization landscapes in machine learning has split researchers into two major algorithmic fields: deterministic mathematical programming and stochastic heuristic exploration.
+
+\subsection{First-Order Gradient Methods}
+Stochastic Gradient Descent remains the foundational framework for training parametric structures. While computationally inexpensive, its reliance on a uniform global learning rate often hinders efficient convergence across surfaces with disparate directional dimensions. To counteract the oscillation issues inherent to standard SGD, researchers introduced Momentum, which accumulates a velocity vector in directions of persistent gradient reduction.
+
+Building upon this, Kingma and Ba (2014) introduced the Adam optimizer to mitigate this by computing adaptive learning rates derived from exponentially decaying averages of both past gradients (the first moment) and past squared gradients (the second moment). This allows the algorithm to automatically scale step sizes based on path variance. However, subsequent research indicates that adaptive methods can occasionally overfit local anomalies or fail to converge to global bounds when encountering non-smooth boundary landscapes.
+
+\subsection{Population-Based Metaheuristics}
+Particle Swarm Optimization, formalized by Kennedy and Eberhart (1995), bypasses the requirement for gradient derivation completely. Instead of a single agent tracking local slope directions, an entire population of candidate solutions (particles) collaborates stochastically. 
+
+In machine learning, applying PSO to optimize weight matrices—often referred to as training "neuro-ensembles"—has proven effective for non-differentiable or discontinuous activation layouts. The primary bottleneck highlighted in recent literature is the scalability constraint. As parameter spaces expand, the exploratory capacity of finite swarms drops significantly due to the "curse of dimensionality," leading to exponentially higher computational costs compared to backpropagation variants.
+
+% ==========================================
+%             3. METHODOLOGY
+% ==========================================
+\section{Methodology}
+
+\subsection{Dataset Profiles and Preprocessing}
+Two distinct benchmarks were selected to evaluate mathematical resilience and multi-class classification accuracy:
 \begin{enumerate}
-    \item \textbf{Stochastic Gradient Descent (SGD) :} Implémentation classique avec un taux d'apprentissage fixe. Il sert de \textit{baseline} théorique.
-    \item \textbf{Adam (Adaptive Moment Estimation) :} Optimiseur de pointe qui calcule des taux d'apprentissage adaptatifs pour chaque paramètre en estimant les moments du premier (moyenne) et second ordre (variance non centrée) des gradients.
-    \item \textbf{Particle Swarm Optimization (PSO) :} Une métaheuristique développée "from scratch" en PyTorch. La population a été fixée à 30 particules. Chaque particule $i$ navigue dans l'espace $\mathbb{R}^{83}$ en mettant à jour sa vitesse et sa position selon son meilleur historique personnel et le meilleur historique global de l'essaim, sans jamais calculer la dérivée de la fonction de perte.
+    \item \textbf{The Iris Dataset:} Comprising 150 instances evenly distributed across three target floral classes, evaluated using 4 distinct continuous morphological traits. The data was split into an 80/20 train/test distribution. Z-score normalization was uniformly enforced on input features.
+    \item \textbf{The 2D Rastrigin Function:} Formally defined as:
+    \begin{equation}
+        f(x, y) = 20 + (x^2 - 10\cos(2\pi x)) + (y^2 - 10\cos(2\pi y))
+    \end{equation}
+    Bounded within $x, y \in [-5.12, 5.12]$, this surface contains thousands of local minima, creating a demanding landscape for testing local minimum avoidance.
 \end{enumerate}
 
-\subsection{Architecture Logicielle Découplée (Full-Stack)}
-Au-delà du script d'entraînement classique, ce projet s'est distingué par l'intégration d'une architecture logicielle professionnelle, séparant la logique d'optimisation mathématique de sa restitution visuelle.
+\subsection{Mathematical Formulations of Optimizers}
 
-% --- IMAGE 1 : ARCHITECTURE (OPTIONNELLE) ---
-% Si vous avez un schéma draw.io de votre architecture, décommentez la suite :
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{architecture.png}
-%     \caption{Architecture découplée : Moteur d'optimisation backend (FastAPI/PyTorch) et Tableau de bord frontend (React/Plotly)}
-%     \label{fig:archi}
-% \end{figure}
+To rigorously compare the approaches, it is crucial to establish their mathematical update rules for a parameter vector $\theta$ at iteration $t$.
 
-Le backend a été développé avec \textbf{FastAPI} pour exposer les trajectoires générées par les algorithmes sous forme de service web (API RESTful). Le frontend, construit avec \textbf{React et Tailwind CSS}, consomme ces données de manière asynchrone pour animer les trajectoires sur un tableau de bord analytique.
+\subsubsection{Stochastic Gradient Descent (SGD)}
+SGD updates the parameters directly in the opposite direction of the gradient of the objective function $J(\theta)$ with respect to the parameters, scaled by a fixed learning rate $\eta$:
+\begin{equation}
+    \theta_{t+1} = \theta_t - \eta \nabla J(\theta_t)
+\end{equation}
 
-% ---------------------------------------------------------
-\section{Résultats Expérimentaux}
+\subsubsection{Adam (Adaptive Moment Estimation)}
+Adam computes individual adaptive learning rates for different parameters. It stores an exponentially decaying average of past gradients $m_t$ and past squared gradients $v_t$:
+\begin{align}
+    m_t &= \beta_1 m_{t-1} + (1 - \beta_1) g_t \\
+    v_t &= \beta_2 v_{t-1} + (1 - \beta_2) g_t^2
+\end{align}
+To counteract initialization bias towards zero, bias-corrected estimates are computed:
+\begin{equation}
+    \hat{m}_t = \frac{m_t}{1 - \beta_1^t}, \quad \hat{v}_t = \frac{v_t}{1 - \beta_2^t}
+\end{equation}
+The final parameter update is:
+\begin{equation}
+    \theta_{t+1} = \theta_t - \frac{\eta}{\sqrt{\hat{v}_t} + \epsilon} \hat{m}_t
+\end{equation}
 
-Les trois algorithmes ont été entraînés sur le dataset Iris pendant 100 itérations, dans des conditions matérielles strictement identiques (exécution CPU, initialisation des poids via \textit{seed} fixe).
+\subsubsection{Particle Swarm Optimization (PSO)}
+PSO operates entirely without gradients. For a swarm of $N$ particles, each particle $i$ has a position vector $x_i$ and a velocity vector $v_i$. The velocity and position are updated iteratively using the particle's personal best position ($p_i$) and the global best position ($g$):
+\begin{align}
+    v_i^{t+1} &= w v_i^t + c_1 r_1 (p_i - x_i^t) + c_2 r_2 (g - x_i^t) \\
+    x_i^{t+1} &= x_i^t + v_i^{t+1}
+\end{align}
+Where $w$ is the inertia weight, $c_1, c_2$ are cognitive and social scaling parameters, and $r_1, r_2 \sim U(0,1)$ introduce stochasticity.
 
-\subsection{Synthèse des Métriques}
+\subsection{System Architecture}
+To establish an identical evaluation environment, a custom Multi-Layer Perceptron (MLP) was constructed via PyTorch. The layer configuration consists of an input layer ($X \in \mathbb{R}^{4}$), a hidden dense layer (10 nodes, ReLU activation), and an output layer ($Y \in \mathbb{R}^{3}$). The model encapsulates exactly 83 distinct parameters.
 
-Le tableau \ref{tab:results} expose les performances finales. La dichotomie entre la précision mathématique et le coût computationnel y est évidente.
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{lccc}
-        \toprule
-        \textbf{Optimiseur} & \textbf{Temps d'exécution (s)} & \textbf{Perte Finale (Train)} & \textbf{Précision (Test)} \\
-        \midrule
-        \textbf{SGD} & 0.179 & 0.94100 & 70.0\% \\
-        \textbf{Adam} & \textbf{0.155} & 0.08361 & \textbf{100.0\%} \\
-        \textbf{PSO} & 0.425 & \textbf{0.03781} & \textbf{100.0\%} \\
-        \bottomrule
-    \end{tabular}
-    \caption{Comparaison empirique de la qualité de la solution et du coût computationnel}
-    \label{tab:results}
-\end{table}
-
-\subsection{Analyse Cinétique de la Convergence}
-
-Pour comprendre ces métriques, l'observation des courbes de convergence est primordiale.
-
-% --- IMAGE 2 : COURBE DE CONVERGENCE ---
-\begin{figure}[H]
-    \centering
-    % Remplacez 'convergence.png' par le nom exact de votre fichier
-    \includegraphics[width=0.85\textwidth]{convergence.png}
-    \caption{Évolution de la fonction de perte (Cross-Entropy) au fil des itérations}
-    \label{fig:convergence}
-\end{figure}
-
-L'analyse de la figure \ref{fig:convergence} révèle trois comportements structurellement différents :
+The implementation relies on a clean, decoupled full-stack architecture:
 \begin{itemize}
-    \item \textbf{La rigidité de SGD :} Avec un pas d'apprentissage fixe de $0.01$, SGD peine à descendre efficacement le long des ravins de la fonction de perte. En 100 itérations, il n'atteint qu'une précision médiocre (70\%).
-    \item \textbf{La fulgurance d'Adam :} Grâce à sa capacité à accumuler de l'inertie (Momentum) et à moduler son apprentissage, Adam descend la surface d'erreur avec une fluidité remarquable, atteignant rapidement un excellent minimum local.
-    \item \textbf{L'exploration en paliers de PSO :} La courbe rouge de PSO démontre la nature stochastique de l'algorithme. La fonction de perte stagne pendant que l'essaim explore, puis chute brutalement lorsqu'une particule découvre une meilleure région. In fine, PSO trouve un minimum global \textbf{plus bas que celui d'Adam} (0.037 vs 0.083).
+    \item \textbf{Backend Engine:} Built with FastAPI and PyTorch to serve execution routes asynchronously.
+    \item \textbf{Frontend Dashboard:} Developed with React, Tailwind CSS, and HTML5 Canvas components to fetch endpoint metrics asynchronously and render optimization pathways in real time.
 \end{itemize}
 
-% ---------------------------------------------------------
-\section{Simulation Avancée et Limites Analytiques}
+% ==========================================
+%           4. EXPERIMENTAL RESULTS
+% ==========================================
+\section{Experimental Results}
 
-\subsection{Visualisation des Trajectoires sur la Fonction de Rastrigin}
-Pour pallier l'impossibilité de visualiser l'espace en 83 dimensions du modèle Iris, nous avons conçu un outil de simulation web. L'API projette les algorithmes sur la \textbf{fonction de Rastrigin en 2D}, une surface mathématique délibérément criblée de minima locaux pièges.
+All three optimization modules completed 100 iterations under uniform processing settings. The visualization interface allows for detailed comparative analysis across distinct tabs.
 
-% --- IMAGE 3 : DASHBOARD WEB ---
+\subsection{Training Convergence Profile}
+The primary objective was the multi-class classification of the Iris dataset. Figure \ref{fig:training_tab} captures the live dashboard rendering the Cross-Entropy loss convergence.
+
 \begin{figure}[H]
     \centering
-    % Remplacez 'dashboard_ui.png' par la capture d'écran de votre interface web
-    \includegraphics[width=0.95\textwidth]{dashboard_ui.png}
-    \caption{Tableau de bord interactif (React/Plotly) illustrant l'évitement des minima locaux}
-    \label{fig:dashboard}
+    \includegraphics[width=0.95\textwidth]{img_training.png}
+    \caption{The Training Convergence tab showing comparative learning curves for SGD, Adam, and PSO on the Iris dataset over 100 epochs.}
+    \label{fig:training_tab}
 \end{figure}
 
-Comme l'illustre l'interface analytique (Figure \ref{fig:dashboard}), les méthodes de gradient strict (SGD, Adam) ont une forte propension à converger vers le minimum local le plus proche de leur point d'initialisation. À l'inverse, l'essaim particulaire (PSO) disperse ses agents. Si certaines particules sont piégées, elles sont finalement "rappelées" par l'influence gravitationnelle de la particule ayant découvert le véritable minimum global.
+The visual output clearly demonstrates Adam's initial dominance, dropping rapidly within the first 15 epochs. SGD struggles with a steady but slow linear descent. PSO, represented by the grey step-wise line, exhibits significant early exploration before plunging to discover the lowest absolute loss value.
 
-\subsection{La Limite Inhérente : Le Passage à l'Échelle (Scalability)}
-Si PSO triomphe sur la qualité de la solution finale dans un espace restreint ($\mathbb{R}^{83}$), le tableau \ref{tab:results} trahit sa principale faiblesse : le temps de calcul. PSO nécessite ici $0.425$ secondes contre $0.155$ secondes pour Adam. 
+\subsection{Comparative Performance Synthesis}
+The "Results Comparison" tab (Figure \ref{fig:results_tab}) synthesizes the final quantitative metrics.
 
-Dans un algorithme de gradient, chaque lot de données (batch) ne requiert qu'une seule passe aller-retour (Forward/Backward propagation) pour ajuster le modèle complet. Pour PSO, sans calcul de gradient, le modèle doit évaluer la fonction de perte par \textit{Forward pass} complète pour \textbf{chaque particule} à \textbf{chaque itération}. Sur un réseau de grande envergure (ex: ResNet, Transformers avec des millions de paramètres), l'espace de recherche devient trop vaste. L'exploration stochastique par essaim subit la "malédiction de la dimensionnalité", rendant la convergence non seulement atrocement lente, mais souvent impossible.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img_results.png}
+    \caption{Results Comparison dashboard highlighting final algorithm performance, execution time, and total loss comparisons.}
+    \label{fig:results_tab}
+\end{figure}
 
-% ---------------------------------------------------------
+The bar charts highlight the core trade-off between the algorithms. While PSO achieved the lowest final loss (0.037) and perfectly matched Adam's peak test accuracy (100\%), its execution time was nearly triple that of the gradient-based methods (0.426s compared to Adam's 0.155s).
+
+% ==========================================
+%               5. DISCUSSIONS
+% ==========================================
+\section{Discussions}
+
+\subsection{Visualizing Topographical Navigation (2D Rastrigin)}
+To understand *how* the algorithms navigate complex loss landscapes, the models were projected onto a 2D Rastrigin function, characterized by a massive grid of sub-optimal local minima.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{img_landscape.png}
+    \caption{The Optimization Landscape tab tracking particle paths (orange/grey) and gradient paths (blue) on a non-convex surface.}
+    \label{fig:landscape_tab}
+\end{figure}
+
+Figure \ref{fig:landscape_tab} exposes the limitations of strict gradient descent. SGD and Adam vectors are easily caught by the gravitational pull of the nearest local depression. PSO, acting as a collaborative swarm, diffuses across the map. The erratic, crisscrossing orange paths show particles sharing information to progressively swarm the true global minimum at the center of the grid.
+
+\subsection{Distance-to-Origin Convergence Stability}
+To further analyze the stability of the algorithms during execution, we recorded the "Distance to Origin" ($|\theta|$) at each iteration, exposing the internal volatility of the search process.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img_sgd_dist.png}
+        \caption{SGD Convergence Volatility}
+        \label{fig:sgd_dist}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{img_adam_dist.png}
+        \caption{Adam Smooth Trajectory}
+        \label{fig:adam_dist}
+    \end{subfigure}
+    \vskip\baselineskip
+    \begin{subfigure}[b]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{img_pso_dist.png}
+        \caption{PSO Swarm Collapse}
+        \label{fig:pso_dist}
+    \end{subfigure}
+    \caption{Comparative internal search stability metrics for the three optimizers.}
+    \label{fig:distances}
+\end{figure}
+
+As seen in Figure \ref{fig:distances}:
+\begin{itemize}
+    \item \textbf{SGD} (Fig. \ref{fig:sgd_dist}) shows extreme high-frequency oscillation (noise) as it attempts to step through the gradients, struggling to settle.
+    \item \textbf{Adam} (Fig. \ref{fig:adam_dist}) exhibits an incredibly smooth, parabolic adjustment. The momentum parameters act as a dampener, completely absorbing the noise of the landscape.
+    \item \textbf{PSO} (Fig. \ref{fig:pso_dist}) begins with massive spatial variance as particles initialize across the map, followed by a dramatic "swarm collapse" toward zero as the particles reach consensus on the global minimum.
+\end{itemize}
+
+\subsection{Scalability Constraints and the Curse of Dimensionality}
+Although PSO excels on lower-dimensional benchmarks ($\mathbb{R}^{83}$), scalability remains its main limitation. As neural network architectures scale to millions of parameters, the volume of the search space grows exponentially. In these massive parameter spaces, a finite swarm loses its exploratory advantage and struggles to converge efficiently.
+
+% ==========================================
+%               6. CONCLUSION
+% ==========================================
 \section{Conclusion}
 
-Ce projet d'ingénierie appliquée confirme qu'en matière d'optimisation mathématique pour le Machine Learning, la loi du "No Free Lunch" prévaut. 
+This comparative analysis validates the "No Free Lunch" theorem in mathematical optimization. First-order adaptive gradient methods like Adam remain the practical standard for high-dimensional machine learning due to their excellent balance of speed and smooth convergence capability. 
 
+Conversely, population-based metaheuristics like PSO offer strong resilience against local minima on complex, non-convex surfaces. While less suited for direct weight optimization in large neural networks due to severe temporal overhead, they are highly effective for tasks like hyperparameter tuning and automated neural architecture search (NAS). 
+
+Finally, this project shows that combining data science research with clean full-stack software development (React/FastAPI) creates powerful tools for making complex algorithmic behaviors visible, interpretable, and easier to analyze.
+
+% ==========================================
+%             7. REFERENCES
+% ==========================================
+\newpage
+\begin{thebibliography}{99}
+\bibitem{kingma2014} Kingma, D. P., \& Ba, J. (2014). Adam: A Method for Stochastic Optimization. \textit{arXiv preprint arXiv:1412.6980}.
+\bibitem{kennedy1995} Kennedy, J., \& Eberhart, R. (1995). Particle swarm optimization. \textit{Proceedings of ICNN'95 - International Conference on Neural Networks}, 4, 1942-1948.
+\bibitem{pytorch2019} Paszke, A., et al. (2019). PyTorch: An Imperative Style, High-Performance Deep Learning Library. \textit{Advances in Neural Information Processing Systems}, 32.
+\end{thebibliography}
+
+% ==========================================
+%              8. APPENDIX
+% ==========================================
+\newpage
+\section{Appendix}
+\subsection{Source Code and Notebook Repositories}
+The complete codebase for this project, including the FastAPI backend service layer, the React user interface application, and the mathematical testing modules, is available at the following repository link:
 \begin{itemize}
-    \item Les \textbf{méthodes basées sur le gradient}, notamment les variantes adaptatives comme Adam, sont indispensables à l'ère du Deep Learning. Leur rapport coût-calcul/efficacité est imbattable sur des fonctions différentiables de très grande dimension.
-    \item Les \textbf{métaheuristiques populationnelles}, comme PSO, offrent une résilience fascinante face aux surfaces non convexes et non dérivables. Bien qu'inadaptées à l'entraînement direct des poids de grands réseaux de neurones, elles restent des outils redoutables pour des tâches d'exploration complexe, comme l'optimisation des hyperparamètres (Hyperparameter Tuning) ou la conception d'architecture neuronale (Neural Architecture Search).
+    \item GitHub Project URL: \url{https://github.com/cchahid/Optimization_project}
 \end{itemize}
 
-Enfin, le déploiement de ces mécanismes d'optimisation au sein d'une architecture applicative distribuée (FastAPI / React) a démontré l'importance cruciale de coupler la rigueur des Data Sciences aux bonnes pratiques du Software Engineering (Data Engineering) pour rendre les modèles explicables et accessibles.
+\subsection{Optimization Algorithm Engineering (PyTorch)}
+Below is an excerpt of the custom PSO implementation designed to interoperate with PyTorch's tensor architecture for GPU/CPU agnostic execution.
+
+\begin{lstlisting}[language=Python, caption=Excerpt from the Custom Particle Swarm Optimizer implementation]
+import torch
+
+class ParticleSwarmOptimizer:
+    def __init__(self, model, num_particles=30, w=0.7, c1=1.5, c2=1.5):
+        self.model = model
+        self.num_particles = num_particles
+        self.w = w
+        self.c1 = c1
+        self.c2 = c2
+        
+        # Extract shapes to reconstruct model weights
+        self.shapes = [p.shape for p in model.parameters()]
+        self.num_params = sum(p.numel() for p in model.parameters())
+        
+        # Initialize swarm
+        self.particles = torch.randn(self.num_particles, self.num_params)
+        self.velocities = torch.randn(self.num_particles, self.num_params) * 0.1
+        
+        self.pbest = self.particles.clone()
+        self.pbest_loss = torch.full((self.num_particles,), float('inf'))
+        self.gbest = None
+        self.gbest_loss = float('inf')
+
+    def optimize_step(self, objective_function):
+        for i in range(self.num_particles):
+            # Evaluate current particle
+            current_loss = objective_function(self.particles[i])
+            
+            # Update Personal Best
+            if current_loss < self.pbest_loss[i]:
+                self.pbest_loss[i] = current_loss
+                self.pbest[i] = self.particles[i].clone()
+                
+                # Update Global Best
+                if current_loss < self.gbest_loss:
+                    self.gbest_loss = current_loss
+                    self.gbest = self.particles[i].clone()
+
+        # Update Velocities and Positions
+        r1 = torch.rand(self.num_particles, self.num_params)
+        r2 = torch.rand(self.num_particles, self.num_params)
+        
+        cognitive = self.c1 * r1 * (self.pbest - self.particles)
+        social = self.c2 * r2 * (self.gbest - self.particles)
+        
+        self.velocities = (self.w * self.velocities) + cognitive + social
+        self.particles = self.particles + self.velocities
+        
+        return self.gbest_loss
+\end{lstlisting}
 
 \end{document}

@@ -1,13 +1,27 @@
-\babel@toc {french}{}\relax 
+\babel@toc {french}{}
+\babel@toc {french}{}
+\babel@toc {english}{}
 \contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
-\contentsline {section}{\numberline {2}Méthodologie et Architecture}{2}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Données et Modélisation Mathématique}{2}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Les Algorithmes Déployés}{2}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Architecture Logicielle Découplée (Full-Stack)}{3}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Résultats Expérimentaux}{3}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Synthèse des Métriques}{3}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Analyse Cinétique de la Convergence}{3}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Simulation Avancée et Limites Analytiques}{4}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Visualisation des Trajectoires sur la Fonction de Rastrigin}{4}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}La Limite Inhérente : Le Passage à l'Échelle (Scalability)}{5}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Conclusion}{5}{section.5}%
+\contentsline {subsection}{\numberline {1.1}Context and Motivation}{2}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Project Objectives}{2}{subsection.1.2}%
+\contentsline {section}{\numberline {2}Literature Review}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}First-Order Gradient Methods}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Population-Based Metaheuristics}{3}{subsection.2.2}%
+\contentsline {section}{\numberline {3}Methodology}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Dataset Profiles and Preprocessing}{3}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Mathematical Formulations of Optimizers}{3}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Stochastic Gradient Descent (SGD)}{4}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Adam (Adaptive Moment Estimation)}{4}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Particle Swarm Optimization (PSO)}{4}{subsubsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.3}System Architecture}{4}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Experimental Results}{5}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Training Convergence Profile}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Comparative Performance Synthesis}{5}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Discussions}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Visualizing Topographical Navigation (2D Rastrigin)}{6}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Distance-to-Origin Convergence Stability}{7}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Scalability Constraints and the Curse of Dimensionality}{8}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Conclusion}{8}{section.6}%
+\contentsline {section}{\numberline {7}Appendix}{10}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Source Code and Notebook Repositories}{10}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Optimization Algorithm Engineering (PyTorch)}{10}{subsection.7.2}%
