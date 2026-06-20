@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2026.6.20)  20 JUN 2026 19:23
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2026.6.20)  20 JUN 2026 19:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -504,72 +504,72 @@ Package pdftex.def Info: DSBD.png  used on input line 73.
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.116 \newpage
+l.114 \newpage
                [1] [2] [3] [4]
-<img_training.png, id=179, 961.09062pt x 399.4925pt>
+<img_training.png, id=178, 962.09438pt x 414.54875pt>
 File: img_training.png Graphic file (type png)
 <use img_training.png>
-Package pdftex.def Info: img_training.png  used on input line 224.
-(pdftex.def)             Requested size: 432.48051pt x 179.76996pt.
-<img_results.png, id=181, 958.07938pt x 413.04312pt>
+Package pdftex.def Info: img_training.png  used on input line 222.
+(pdftex.def)             Requested size: 432.48051pt x 186.34912pt.
+<img_results.png, id=180, 961.09062pt x 416.05438pt>
 File: img_results.png Graphic file (type png)
 <use img_results.png>
-Package pdftex.def Info: img_results.png  used on input line 236.
-(pdftex.def)             Requested size: 432.48051pt x 186.44751pt.
+Package pdftex.def Info: img_results.png  used on input line 234.
+(pdftex.def)             Requested size: 432.48051pt x 187.22273pt.
  [5 </home/codespace/Optimization_project/rapport/img_training.png>]
-<img_landscape.png, id=189, 962.59625pt x 414.54875pt>
+<img_landscape.png, id=188, 962.59625pt x 417.05812pt>
 File: img_landscape.png Graphic file (type png)
 <use img_landscape.png>
-Package pdftex.def Info: img_landscape.png  used on input line 253.
-(pdftex.def)             Requested size: 432.48051pt x 186.24791pt.
+Package pdftex.def Info: img_landscape.png  used on input line 251.
+(pdftex.def)             Requested size: 432.48051pt x 187.37532pt.
  [6 </home/codespace/Optimization_project/rapport/img_results.png> </home/codespace/Optimization_project/rapport/img_landscape.png>]
-<img_sgd_dist.png, id=199, 343.78438pt x 307.1475pt>
+<img_sgd_dist.png, id=198, 343.78438pt x 307.1475pt>
 File: img_sgd_dist.png Graphic file (type png)
 <use img_sgd_dist.png>
-Package pdftex.def Info: img_sgd_dist.png  used on input line 266.
+Package pdftex.def Info: img_sgd_dist.png  used on input line 264.
 (pdftex.def)             Requested size: 218.51521pt x 195.22864pt.
-<img_adam_dist.png, id=200, 339.2675pt x 303.1325pt>
+<img_adam_dist.png, id=199, 339.2675pt x 303.1325pt>
 File: img_adam_dist.png Graphic file (type png)
 <use img_adam_dist.png>
-Package pdftex.def Info: img_adam_dist.png  used on input line 272.
+Package pdftex.def Info: img_adam_dist.png  used on input line 270.
 (pdftex.def)             Requested size: 218.51521pt x 195.23912pt.
-<img_pso_dist.png, id=201, 341.77687pt x 306.14375pt>
+<img_pso_dist.png, id=200, 341.77687pt x 306.14375pt>
 File: img_pso_dist.png Graphic file (type png)
 <use img_pso_dist.png>
-Package pdftex.def Info: img_pso_dist.png  used on input line 278.
+Package pdftex.def Info: img_pso_dist.png  used on input line 276.
 (pdftex.def)             Requested size: 227.62206pt x 203.89601pt.
  [7 </home/codespace/Optimization_project/rapport/img_sgd_dist.png> </home/codespace/Optimization_project/rapport/img_adam_dist.png> </home/codespace/Optimization_project/rapport/img_pso_dist.png>] [8] [9]
-LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 325.
+LaTeX Font Info:    Trying to load font information for T1+cmtt on input line 323.
  (/usr/share/texlive/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 ) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2019/09/10 1.8c listings language file
 )
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 331.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 329.
  [10]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 383.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 381.
  [11]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 383.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 381.
  (/home/codespace/Optimization_project/rapport/rapport.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 383.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 383.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 381.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 381.
 Package rerunfilecheck Info: File `rapport.out' has not changed.
 (rerunfilecheck)             Checksum: 7B9D7F3764D2FB5161180204E54A99D9;1800.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 383.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 381.
  ) 
 Here is how much of TeX's memory you used:
  12371 strings out of 483081
  180034 string characters out of 5963441
- 803195 words of memory out of 5000000
+ 803196 words of memory out of 5000000
  27080 multiletter control sequences out of 15000+600000
  552795 words of font info for 70 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
  41i,8n,42p,593b,2097s stack positions out of 5000i,500n,10000p,200000b,80000s
- </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1095.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2488.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc2074.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on /home/codespace/Optimization_project/rapport/rapport.pdf (12 pages, 1008579 bytes).
+ </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1000.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ectt1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1095.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2488.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1440.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc1728.600pk> </home/codespace/.texlive2019/texmf-var/fonts/pk/ljfour/jknappen/ec/eccc2074.600pk></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on /home/codespace/Optimization_project/rapport/rapport.pdf (12 pages, 1251641 bytes).
 PDF statistics:
- 885 PDF objects out of 1000 (max. 8388607)
- 346 compressed objects within 4 object streams
+ 874 PDF objects out of 1000 (max. 8388607)
+ 342 compressed objects within 4 object streams
  103 named destinations out of 1000 (max. 500000)
  233 words of extra memory for PDF output out of 10000 (max. 10000000)
 
