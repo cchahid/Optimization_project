@@ -20,17 +20,27 @@ export default function DashboardPage() {
     iterations: 100,
     swarmSize: 30,
   })
+  const [showBaseline, setShowBaseline] = useState(false)
   
   const { isOptimizing, hasOptimized, runCount, sgdPath, adamPath, psoPaths, runOptimization } = useOptimization()
   const { isTraining, trainingData, runTraining } = useTraining()
+
+  const handleBaseline = async () => {
+    if (!trainingData && !isTraining) {
+      await runTraining()
+    }
+    setShowBaseline((prev) => !prev)
+  }
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-background">
       <ControlSidebar
         onExecuteTraining={runTraining}
+        onToggleBaseline={handleBaseline}
         onExecuteOptimization={() => runOptimization(params)}
         isTraining={isTraining}
         isOptimizing={isOptimizing}
+        isBaselineVisible={showBaseline}
         params={params}
         onParamsChange={setParams}
       />
@@ -44,6 +54,7 @@ export default function DashboardPage() {
         psoPaths={psoPaths}
         isTraining={isTraining}
         trainingData={trainingData}
+        showBaseline={showBaseline}
       />
     </div>
   )

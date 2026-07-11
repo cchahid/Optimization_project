@@ -54,7 +54,8 @@ interface VizCanvasProps {
   adamPath: PathPoint[]
   psoPaths: PathPoint[][]
   isTraining: boolean
-  trainingData: { epochs: number[], sgd_loss: number[], adam_loss: number[], pso_loss: number[] } | null
+  trainingData: { epochs: number[], sgd_loss: number[], adam_loss: number[], pso_loss: number[], baseline_loss: number[] } | null
+  showBaseline: boolean
 }
 
 // ─── Sparkline (mini convergence curve) ───────────────────────────────────────
@@ -90,7 +91,8 @@ export function VizCanvas({
   adamPath, 
   psoPaths,
   isTraining,
-  trainingData
+  trainingData,
+  showBaseline
 }: VizCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { theme } = useTheme()
@@ -351,6 +353,7 @@ export function VizCanvas({
           <div className="flex justify-between items-center mb-2 flex-shrink-0">
             <TabsList>
               <TabsTrigger value="convergence" className="font-mono text-xs">Training Convergence (Iris)</TabsTrigger>
+              <TabsTrigger value="baseline" className="font-mono text-xs">Baseline Analysis</TabsTrigger>
               <TabsTrigger value="landscape" className="font-mono text-xs">Optimization Landscape (2D)</TabsTrigger>
               <TabsTrigger value="results" className="font-mono text-xs">Results Comparison</TabsTrigger>
             </TabsList>
@@ -439,7 +442,21 @@ export function VizCanvas({
                           y: trainingData.pso_loss,
                           name: "PSO",
                           line: { color: theme === "light" ? "#475569" : "#e2e8f0", width: 2 }
-                        }
+                        },
+                        ...(showBaseline
+                          ? [{
+                              type: "scatter",
+                              mode: "lines",
+                              x: trainingData.epochs,
+                              y: trainingData.baseline_loss,
+                              name: "Baseline (No Optimization)",
+                              line: {
+                                color: theme === "light" ? "#94a3b8" : "#64748b",
+                                width: 2,
+                                dash: "dash"
+                              }
+                            }]
+                          : [])
                       ]}
                       layout={{ ...convergenceLayout, autosize: true }}
                       config={{ displayModeBar: false, responsive: true }}
@@ -466,6 +483,174 @@ export function VizCanvas({
                 </CardContent>
               </Card>
 
+            </div>
+          </TabsContent>
+
+          {/* TAB 2: Baseline Analysis */}
+          <TabsContent value="baseline" className="flex-1 min-h-0 outline-none flex flex-col m-0 data-[state=active]:flex rounded-md border border-panel-border bg-card p-6 overflow-y-auto">
+            <div className="max-w-5xl mx-auto w-full space-y-6">
+              {trainingData ? (
+                (() => {
+                  const initialLoss = trainingData.baseline_loss[0] ?? 0
+                  const sgdFinalLoss = trainingData.sgd_loss.at(-1) ?? Number.POSITIVE_INFINITY
+                  const adamFinalLoss = trainingData.adam_loss.at(-1) ?? Number.POSITIVE_INFINITY
+                  const psoFinalLoss = trainingData.pso_loss.at(-1) ?? Number.POSITIVE_INFINITY
+
+                  const finalScores = [
+                    { name: "SGD", value: sgdFinalLoss, color: "#f59e0b" },
+                    { name: "Adam", value: adamFinalLoss, color: "#22d3ee" },
+                    { name: "PSO", value: psoFinalLoss, color: theme === "light" ? "#475569" : "#e2e8f0" },
+                  ]
+
+                  const bestOptimizer = finalScores.reduce((best, current) => (current.value < best.value ? current : best), finalScores[0])
+                  const bestFinalLoss = bestOptimizer.value
+                  const bestOptimizerName = bestOptimizer.name
+                  const improvementPercentage = initialLoss > 0 && Number.isFinite(bestFinalLoss)
+                    ? ((initialLoss - bestFinalLoss) / initialLoss) * 100
+                    : 0
+                  const bestLossSeries =
+                    bestOptimizerName === "SGD"
+                      ? trainingData.sgd_loss
+                      : bestOptimizerName === "Adam"
+                        ? trainingData.adam_loss
+                        : trainingData.pso_loss
+
+                  const bestTraceFill =
+                    bestOptimizerName === "SGD"
+                      ? "rgba(245, 158, 11, 0.18)"
+                      : bestOptimizerName === "Adam"
+                        ? "rgba(34, 211, 238, 0.18)"
+                        : theme === "light"
+                          ? "rgba(71, 85, 105, 0.18)"
+                          : "rgba(226, 232, 240, 0.18)"
+
+                  return (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                          <div className="size-10 rounded-full bg-accent-white/10 flex items-center justify-center border border-panel-border">
+                            <Activity className="size-5 text-foreground" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Initial Loss</p>
+                            <p className="font-heading text-xl font-bold text-foreground mt-0.5">{initialLoss.toFixed(3)} <span className="text-xs font-normal text-muted-foreground ml-1">(Baseline)</span></p>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                          <div className="size-10 rounded-full bg-accent-cyan/10 flex items-center justify-center border border-accent-cyan/20">
+                            <TrendingDown className="size-5 text-accent-cyan" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Final Best Loss</p>
+                            <p className="font-heading text-xl font-bold text-foreground mt-0.5">{Number.isFinite(bestFinalLoss) ? bestFinalLoss.toFixed(3) : "—"} <span className="text-xs font-normal text-muted-foreground ml-1">({bestOptimizerName})</span></p>
+                          </div>
+                        </div>
+
+                        <div className="p-4 rounded-md border border-panel-border bg-background/50 flex items-center gap-4">
+                          <div className="size-10 rounded-full bg-accent-amber/10 flex items-center justify-center border border-accent-amber/20">
+                            <Target className="size-5 text-accent-amber" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] uppercase font-mono tracking-widest text-muted-foreground">Improvement</p>
+                            <p className="font-heading text-xl font-bold text-foreground mt-0.5">{improvementPercentage.toFixed(1)}% <span className="text-xs font-normal text-muted-foreground ml-1">vs. baseline</span></p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Card className="border-panel-border bg-background/50 overflow-hidden flex flex-col h-[560px] shadow-sm">
+                        <CardHeader className="pb-4 border-b border-panel-border bg-panel/30">
+                          <CardTitle className="text-base font-heading text-foreground">Baseline vs Optimized Training Loss</CardTitle>
+                          <CardDescription className="text-xs font-mono text-muted-foreground mt-1">
+                            Baseline remains flat while optimizers reduce loss across epochs; the best optimizer is emphasized in the legend.
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1 p-0 relative min-h-0">
+                          <Plot
+                            data={[
+                              {
+                                type: "scatter",
+                                mode: "lines",
+                                x: trainingData.epochs,
+                                y: trainingData.baseline_loss,
+                                name: "Baseline (No Optimization)",
+                                line: {
+                                  color: theme === "light" ? "#94a3b8" : "#64748b",
+                                  width: 2,
+                                  dash: "dash"
+                                }
+                              },
+                              {
+                                type: "scatter",
+                                mode: "lines",
+                                x: trainingData.epochs,
+                                y: bestLossSeries,
+                                name: `${bestOptimizerName} (Best Optimizer)`,
+                                fill: "tonexty",
+                                fillcolor: bestTraceFill,
+                                line: {
+                                  color:
+                                    bestOptimizerName === "SGD"
+                                      ? "#f59e0b"
+                                      : bestOptimizerName === "Adam"
+                                        ? "#22d3ee"
+                                        : theme === "light"
+                                          ? "#475569"
+                                          : "#e2e8f0",
+                                  width: 3.5
+                                },
+                                hovertemplate: `${bestOptimizerName} [%{x:.0f}, %{y:.4f}]<extra></extra>`
+                              }
+                            ]}
+                            layout={{
+                              paper_bgcolor: "transparent",
+                              plot_bgcolor: "transparent",
+                              margin: { l: 50, r: 24, t: 24, b: 50 },
+                              xaxis: {
+                                title: { text: "Epochs", font: { family: "var(--font-geist-mono, monospace)", size: 11, color: theme === "light" ? "#64748b" : "#94a3b8" } },
+                                gridcolor: theme === "light" ? "#e2e8f0" : "#334155",
+                                tickfont: { family: "var(--font-geist-mono, monospace)", size: 10, color: theme === "light" ? "#64748b" : "#94a3b8" }
+                              },
+                              yaxis: {
+                                title: { text: "Cross-Entropy Loss", font: { family: "var(--font-geist-mono, monospace)", size: 11, color: theme === "light" ? "#64748b" : "#94a3b8" } },
+                                gridcolor: theme === "light" ? "#e2e8f0" : "#334155",
+                                tickfont: { family: "var(--font-geist-mono, monospace)", size: 10, color: theme === "light" ? "#64748b" : "#94a3b8" }
+                              },
+                              showlegend: true,
+                              legend: {
+                                x: 0.02,
+                                y: 0.98,
+                                bgcolor: "transparent",
+                                bordercolor: "transparent",
+                                font: { family: "var(--font-geist-mono, monospace)", size: 10, color: theme === "light" ? "#64748b" : "#94a3b8" }
+                              },
+                              hovermode: "closest",
+                              autosize: true,
+                            }}
+                            config={{ displayModeBar: false, responsive: true }}
+                            style={{ width: "100%", height: "100%" }}
+                            useResizeHandler
+                          />
+                        </CardContent>
+                      </Card>
+                    </>
+                  )
+                })()
+              ) : (
+                <div className="min-h-[560px] flex items-center justify-center rounded-md border border-panel-border bg-card px-6 py-10 shadow-sm">
+                  <div className="max-w-lg text-center space-y-4">
+                    <div className="mx-auto size-14 rounded-full border border-panel-border/60 bg-background/60 flex items-center justify-center">
+                      <Activity className="size-6 text-muted-foreground/40" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="font-heading text-xl font-semibold text-foreground">Awaiting Data</h3>
+                      <p className="font-mono text-sm text-muted-foreground/70 leading-relaxed">
+                        Please click Execute Training to generate the baseline comparison.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </TabsContent>
 

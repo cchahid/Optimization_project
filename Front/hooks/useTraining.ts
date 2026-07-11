@@ -6,6 +6,7 @@ export interface TrainingData {
   sgd_loss: number[]
   adam_loss: number[]
   pso_loss: number[]
+  baseline_loss: number[]
 }
 
 export function useTraining() {
@@ -22,7 +23,13 @@ export function useTraining() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       
       const data = await res.json()
-      setTrainingData(data)
+      setTrainingData({
+        epochs: data.epochs,
+        sgd_loss: data.sgd_loss,
+        adam_loss: data.adam_loss,
+        pso_loss: data.pso_loss,
+        baseline_loss: data.baseline_loss,
+      })
     } catch (err) {
       console.error("Failed to fetch training data", err)
       toast.error('Backend Error: Could not connect to FastAPI. Please ensure the server is running on port 8000.')

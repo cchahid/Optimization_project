@@ -19,9 +19,11 @@ import { cn } from "@/lib/utils"
 
 interface ControlSidebarProps {
   onExecuteTraining: () => void
+  onToggleBaseline: () => void
   onExecuteOptimization: () => void
   isTraining: boolean
   isOptimizing: boolean
+  isBaselineVisible: boolean
   params: {
     learningRate: number
     iterations: number
@@ -90,9 +92,11 @@ function MetricChip({ label, value }: { label: string; value: string }) {
 
 export function ControlSidebar({ 
   onExecuteTraining, 
+  onToggleBaseline,
   onExecuteOptimization, 
   isTraining, 
   isOptimizing, 
+  isBaselineVisible,
   params, 
   onParamsChange 
 }: ControlSidebarProps) {
@@ -237,6 +241,31 @@ export function ControlSidebar({
             <>
               <Play className="size-3.5 mr-2" />
               Execute Training (Iris)
+            </>
+          )}
+        </Button>
+
+        <Button
+          onClick={onToggleBaseline}
+          disabled={isTraining}
+          className={cn(
+            "w-full font-mono text-[10px] tracking-widest uppercase h-10",
+            isBaselineVisible
+              ? "bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30"
+              : "bg-panel text-foreground border border-panel-border",
+            "hover:bg-panel/80 transition-colors",
+            "disabled:opacity-60"
+          )}
+        >
+          {isTraining ? (
+            <>
+              <Loader2 className="size-3 animate-spin mr-2" />
+              Loading Baseline...
+            </>
+          ) : (
+            <>
+              <Activity className="size-3 mr-2" />
+              {isBaselineVisible ? "Hide Baseline" : "Show/Execute Baseline"}
             </>
           )}
         </Button>

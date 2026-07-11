@@ -62,3 +62,37 @@ def train_gradient_descent(model, train_loader, optimizer, criterion, epochs=50)
     # 6. Return the metrics
     return epoch_losses, epoch_accuracies
 
+
+def compute_baseline_loss(model, train_loader, criterion, epochs=50):
+    """
+    Compute cross-entropy loss with frozen initial random weights.
+
+    This performs forward passes only (no backward pass and no optimizer step),
+    then repeats the same baseline value for each epoch so it can be plotted
+    alongside training curves.
+
+    Args:
+        model (nn.Module): Untrained PyTorch model with random initialization.
+        train_loader (DataLoader): DataLoader for the training dataset.
+        criterion (nn.Module): Loss function (e.g., CrossEntropyLoss).
+        epochs (int): Number of epochs for returned curve length.
+
+    Returns:
+        list: Baseline loss values of length ``epochs``.
+    """
+    model.eval()
+
+    running_loss = 0.0
+    total_samples = 0
+
+    with torch.no_grad():
+        for batch_features, batch_labels in train_loader:
+            outputs = model(batch_features)
+            loss = criterion(outputs, batch_labels)
+
+            running_loss += loss.item() * batch_features.size(0)
+            total_samples += batch_labels.size(0)
+
+    baseline = running_loss / total_samples if total_samples > 0 else 0.0
+    return [baseline for _ in range(epochs)]
+

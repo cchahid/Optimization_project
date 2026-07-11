@@ -129,7 +129,7 @@ def run_optimization(params: OptimizationParams):
 
 from src.dataset import get_dataloaders
 from src.models import SimpleMLP
-from src.train import train_gradient_descent
+from src.train import train_gradient_descent, compute_baseline_loss
 from src.optimizers import ParticleSwarmOptimizer
 import torch.nn as nn
 import torch.optim as optim
@@ -139,6 +139,10 @@ def training_convergence():
     epochs = 100
     train_loader, test_loader, num_features, num_classes = get_dataloaders(batch_size=32)
     criterion = nn.CrossEntropyLoss()
+
+    # --- Baseline (no optimization) ---
+    model_baseline = SimpleMLP(num_features, num_classes)
+    baseline_loss = compute_baseline_loss(model_baseline, train_loader, criterion, epochs=epochs)
 
     # --- SGD ---
     model_sgd = SimpleMLP(num_features, num_classes)
@@ -168,6 +172,7 @@ def training_convergence():
         "epochs": list(range(1, epochs + 1)),
         "sgd_loss": sgd_loss,
         "adam_loss": adam_loss,
-        "pso_loss": pso_loss
+        "pso_loss": pso_loss,
+        "baseline_loss": baseline_loss
     }
 
