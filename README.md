@@ -36,7 +36,10 @@ The project currently evaluates three distinct algorithms on the **2D Rastrigin 
 - Python 3.8+ 
 
 ### Running the Backend
-1. Navigate to the root directory.
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
 2. Activate your virtual environment (if using one).
 3. Install the dependencies:
    ```bash
@@ -49,9 +52,10 @@ The project currently evaluates three distinct algorithms on the **2D Rastrigin 
    *The backend will run at `http://127.0.0.1:8000`.*
 
 ### Running the Frontend
-1. Navigate to the `Front` directory:
+1. Navigate to the `front` directory:
    ```bash
-   cd Front
+   cd ..
+   cd front
    ```
 2. Install the frontend dependencies:
    ```bash

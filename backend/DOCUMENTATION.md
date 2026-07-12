@@ -24,7 +24,7 @@ At the core of this project, the backend serves as the computational engine for 
 The training domain uses standard gradient-descent-based optimizers (SGD and Adam) compared against our custom PSO. 
 
 ### 2.1 The Standard PyTorch Training Loop
-Below is the core of the gradient descent training loop from `src/train.py`. The code block is heavily annotated to explain the *how* and *why* behind each line.
+Below is the core of the gradient descent training loop from `backend/src/train.py`. The code block is heavily annotated to explain the *how* and *why* behind each line.
 
 ```python
 # Iterate over batches provided by the DataLoader
@@ -99,7 +99,7 @@ $$ x_{t+1} = x_t + v_{t+1} $$
 
 ### 3.2 The PSO Implementation Code
 
-Below is the heavily annotated core execution loop from `src/optimizers.py` (`ParticleSwarmOptimizer` class) where these mathematics are realized in PyTorch tensors:
+Below is the heavily annotated core execution loop from `backend/src/optimizers.py` (`ParticleSwarmOptimizer` class) where these mathematics are realized in PyTorch tensors:
 
 ```python
 for i in range(iterations):
